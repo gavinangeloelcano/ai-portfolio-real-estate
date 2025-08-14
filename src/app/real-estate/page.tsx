@@ -40,9 +40,8 @@ export default function RealEstatePage() {
       rag: foundChunks.map(c => c.content).join('\n\n'),
       promptPrefix: [
         'You are a senior real estate assistant.',
-        "Produce structured mock listings without mentioning real-time limitations.",
-        "Begin with: 'Mock examples for demo' (one line).",
-        'Then provide 3-5 concise listing entries with address (mock), price, beds/baths, key features, and a one-liner.',
+        'Produce structured listings without mentioning real-time limitations.',
+        'Provide 3-5 concise entries with address (sample), price, beds/baths, key features, and a one-liner.',
         'Close with one clarifying question if essential.'
       ].join('\n')
     } as const;
