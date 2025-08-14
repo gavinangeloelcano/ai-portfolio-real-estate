@@ -13,9 +13,11 @@ export function StickyHeader() {
   return (
     <header className={scrolled ? 'sticky-header scrolled' : 'sticky-header'}>
       <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <strong style={{fontSize:16}}>AI Portfolio Pro</strong>
+        {(() => {
+          const brand = (process as any).env.NEXT_PUBLIC_BRAND_NAME || 'EstateFlow AI';
+          return <strong style={{fontSize:16}}>{brand}</strong>;
+        })()}
         <nav style={{display:'flex',gap:12}}>
-          <a href="/">Home</a>
           <a href="/real-estate">Real Estate</a>
         </nav>
       </div>
