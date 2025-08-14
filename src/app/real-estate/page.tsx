@@ -41,8 +41,7 @@ export default function RealEstatePage() {
       promptPrefix: [
         'You are a senior real estate assistant.',
         'Produce structured listings without mentioning real-time limitations.',
-        'Provide 3-5 concise entries with an address, price, beds/baths, key features, and a one-liner.',
-        'Do not use the words "example", "sample", or "mock" and do not include parentheses like (Example Address). Use natural-looking addresses.',
+        'Provide 3-5 concise entries with address (sample), price, beds/baths, key features, and a one-liner.',
         'Close with one clarifying question if essential.'
       ].join('\n')
     } as const;
@@ -71,6 +70,22 @@ export default function RealEstatePage() {
       setRagDocs(listDocs());
     };
     reader.readAsText(file);
+  }
+
+  async function loadSample(name: 'faq'|'csv') {
+    const base = '/src/sample-data';
+    const file = name === 'faq' ? `${base}/real-estate-faq.md` : `${base}/listings.csv`;
+    try {
+      const res = await fetch(file);
+      const content = await res.text();
+      const docId = Math.random().toString(36).slice(2);
+      const fname = name === 'faq' ? 'real-estate-faq.md' : 'listings.csv';
+      addDoc({ id: docId, name: fname, content, type: name });
+      addChunks(docId, fname, content);
+      setRagDocs(listDocs());
+    } catch {
+      // no-op
+    }
   }
 
   async function genListing() {
@@ -132,13 +147,20 @@ export default function RealEstatePage() {
       {/* Keep existing AI demo content */}
       <div className="container" style={{position:'relative',zIndex:2}}>
       <div className="row">
+        {(process as any).env.NEXT_PUBLIC_HIDE_RAG !== '1' && (
         <div className="card" style={{flex:'1 1 340px'}}>
           <h3>Upload CSV/FAQ/Policy for RAG</h3>
-          <input type="file" accept=".csv,.md,.txt" onChange={handleUpload} />
+          <p style={{color:'var(--muted)'}}>Optional: load samples to see citations.</p>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            <button className="btn btn-outline" onClick={() => loadSample('faq')}>Load Sample FAQ</button>
+            <button className="btn btn-outline" onClick={() => loadSample('csv')}>Load Sample CSV</button>
+          </div>
+          <input style={{marginTop:8}} type="file" accept=".csv,.md,.txt" onChange={handleUpload} />
           <ul style={{marginTop:8}}>
             {ragDocs.map(d => <li key={d.id}>{d.name} <span style={{color:'var(--muted)'}}>{d.type}</span></li>)}
           </ul>
         </div>
+        )}
         <div className="card" style={{flex:'1 1 340px'}}>
           <h3>Lead-Qualifying Chat</h3>
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
