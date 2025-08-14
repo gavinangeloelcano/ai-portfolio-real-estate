@@ -7,10 +7,12 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   const { mode, input } = await req.json();
   const hasGemini = !!process.env.GOOGLE_API_KEY;
+  const provider = hasGemini ? 'gemini' : 'mock';
+  const baseHeaders = { 'content-type': 'application/json', 'x-ai-provider': provider, 'x-ai-model': hasGemini ? 'gemini-1.5-flash' : 'mock' } as const;
   if (mode === 'chat') {
     const resp = hasGemini ? await geminiChat(input.messages, input.context) : await mockChat(input);
-    return new Response(JSON.stringify(resp), { status: 200, headers: { 'content-type': 'application/json' } });
+    return new Response(JSON.stringify(resp), { status: 200, headers: baseHeaders });
   }
   const out = hasGemini ? await geminiGenerate(input.task, input.data) : await mockGenerate(input);
-  return new Response(JSON.stringify(out), { status: 200, headers: { 'content-type': 'application/json' } });
+  return new Response(JSON.stringify(out), { status: 200, headers: baseHeaders });
 }

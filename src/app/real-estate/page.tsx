@@ -41,7 +41,8 @@ export default function RealEstatePage() {
       promptPrefix: [
         'You are a senior real estate assistant.',
         'Produce structured listings without mentioning real-time limitations.',
-        'Provide 3-5 concise entries with address (sample), price, beds/baths, key features, and a one-liner.',
+        'Provide 3-5 concise entries with an address, price, beds/baths, key features, and a one-liner.',
+        'Do not use the words "example", "sample", or "mock" and do not include parentheses like (Example Address). Use natural-looking addresses.',
         'Close with one clarifying question if essential.'
       ].join('\n')
     } as const;
