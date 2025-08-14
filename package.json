@@ -1,0 +1,26 @@
+{
+  "name": "@app/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^14.2.4",
+    "react": "^18.2.0",
+  "react-dom": "^18.2.0",
+  "@google/generative-ai": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.10",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.31",
+    "typescript": "^5.9.2"
+  }
+}
