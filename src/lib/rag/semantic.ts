@@ -48,3 +48,7 @@ export function semanticSearch(query: string, topK = 3): RAGChunk[] {
 export function listChunks() {
   return chunks;
 }
+
+export function clearChunks() {
+  chunks.length = 0;
+}

@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { toFubPayload } from '../../lib/integrations/followupboss';
-import { addDoc, listDocs, searchDocs, type RAGDoc } from '../../lib/rag/memory';
-import { addChunks, semanticSearch, listChunks, type RAGChunk } from '../../lib/rag/semantic';
+import { addDoc, listDocs, searchDocs, type RAGDoc, clearDocs } from '../../lib/rag/memory';
+import { addChunks, semanticSearch, listChunks, type RAGChunk, clearChunks } from '../../lib/rag/semantic';
 import { postJSON } from '../../lib/client/api';
 
 export default function RealEstatePage() {
@@ -72,21 +72,15 @@ export default function RealEstatePage() {
     reader.readAsText(file);
   }
 
-  async function loadSample(name: 'faq'|'csv') {
-    const base = '/src/sample-data';
-    const file = name === 'faq' ? `${base}/real-estate-faq.md` : `${base}/listings.csv`;
-    try {
-      const res = await fetch(file);
-      const content = await res.text();
-      const docId = Math.random().toString(36).slice(2);
-      const fname = name === 'faq' ? 'real-estate-faq.md' : 'listings.csv';
-      addDoc({ id: docId, name: fname, content, type: name });
-      addChunks(docId, fname, content);
-      setRagDocs(listDocs());
-    } catch {
-      // no-op
-    }
+  function handleClearDocs() {
+    clearDocs();
+    clearChunks();
+    setRagDocs([]);
+    setMatchedChunks([]);
+    setCitations([]);
   }
+
+  // Removed demo sample loader; users can upload their own files.
 
   async function genListing() {
     const out = await postJSON<{versions:string[]}>('/api/ai', {
@@ -150,12 +144,11 @@ export default function RealEstatePage() {
         {(process as any).env.NEXT_PUBLIC_HIDE_RAG !== '1' && (
         <div className="card" style={{flex:'1 1 340px'}}>
           <h3>Upload CSV/FAQ/Policy for RAG</h3>
-          <p style={{color:'var(--muted)'}}>Optional: load samples to see citations.</p>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-            <button className="btn btn-outline" onClick={() => loadSample('faq')}>Load Sample FAQ</button>
-            <button className="btn btn-outline" onClick={() => loadSample('csv')}>Load Sample CSV</button>
+          <p style={{color:'var(--muted)'}}>Upload a CSV, Markdown FAQ, or text policy to power citations.</p>
+          <div style={{display:'flex', gap:8, alignItems:'center', marginTop:8}}>
+            <input type="file" accept=".csv,.md,.txt" onChange={handleUpload} />
+            <button className="btn btn-outline" onClick={handleClearDocs} disabled={ragDocs.length === 0}>Clear docs</button>
           </div>
-          <input style={{marginTop:8}} type="file" accept=".csv,.md,.txt" onChange={handleUpload} />
           <ul style={{marginTop:8}}>
             {ragDocs.map(d => <li key={d.id}>{d.name} <span style={{color:'var(--muted)'}}>{d.type}</span></li>)}
           </ul>

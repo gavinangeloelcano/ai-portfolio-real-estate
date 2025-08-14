@@ -15,3 +15,7 @@ export function searchDocs(query: string): RAGDoc[] {
   const q = query.toLowerCase();
   return docs.filter(d => d.content.toLowerCase().includes(q));
 }
+
+export function clearDocs() {
+  docs.length = 0;
+}
